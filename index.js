@@ -1,4 +1,4 @@
-import { ShakeVideoElement } from "./classes/ShakeVideoElement";
+import { ShakeVideoElement } from "./classes/ShakeVideoElement.js";
 export {
   ShakeVideoElement
 };

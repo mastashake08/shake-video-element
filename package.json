@@ -1,10 +1,11 @@
 {
   "name": "@mastashake08/shake-video-element",
-  "version": "1.0.2-alpha",
+  "version": "1.0.3-alpha",
   "description": "Custom Javascript Web Component for an enhanced Video element inherits from HTMLVideoElement",
   "author": "Jyrone Parker <jyrone.parker@gmail.com>",
   "main": "index.js",
   "type": "module",
+  "module": "index.js",
   "scripts": {
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint --ignore-path .gitignore .",
