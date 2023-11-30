@@ -1,55 +1,24 @@
-# npm-package-template
+# shake-video-element
 
-[![NPM](https://nodei.co/npm/npm-package-template.png)](https://nodei.co/npm/npm-package-template/)
+[![NPM](https://nodei.co/npm/shake-video-element.png)](https://nodei.co/npm/shake-video-element/)
 
-[![NPM version](https://img.shields.io/npm/v/npm-package-template.svg)](https://www.npmjs.com/package/npm-package-template)
-[![Build Status](https://travis-ci.org/mastashake08/npm-package-template.svg?branch=master)](https://travis-ci.org/mastashake08/npm-package-template)
-[![Coverage Status](https://coveralls.io/repos/github/mastashake08/npm-package-template/badge.svg?branch=master)](https://coveralls.io/github/mastashake08/npm-package-template?branch=master)
+[![NPM version](https://img.shields.io/npm/v/shake-video-element.svg)](https://www.npmjs.com/package/shake-video-element)
+[![Build Status](https://travis-ci.org/mastashake08/shake-video-element.svg?branch=master)](https://travis-ci.org/mastashake08/shake-video-element)
+[![Coverage Status](https://coveralls.io/repos/github/mastashake08/shake-video-element/badge.svg?branch=master)](https://coveralls.io/github/mastashake08/shake-video-element?branch=master)
 
-npm package template.
+A web component for a more enhanced HTMLVideoElement
 
 ## Installation
 
 Clone repository with Git:
 
 ```sh
-git clone https://github.com/mastashake08/npm-package-template.git
-cd npm-package-template
+git clone https://github.com/mastashake08/shake-video-element.git
+cd shake-video-element
 ```
 
 ## Usage
-
-Rename package (use [npm-package-name-checker](https://mastashake08.org/npm-package-name-checker/) to check for name availability):
-
-```sh
-# replace $NAME with your package name
-git grep -l npm-package-template | xargs sed -i '' -e "s/npm-package-template/$NAME/g"
-```
-
-Manually update the files:
-
-- [ ] LICENSE
-- [ ] README.md
-- [ ] package.json
-
-Reinitialize Git repository:
-
-```sh
-rm -rf .git
-git init
-```
-
-Install package dependencies:
-
-```sh
-npm install
-```
-
-Make first commit:
-
-```sh
-git commit -am "feat: initial commit"
-```
+<shake-video src=""/>
 
 ## Testing
 
@@ -108,11 +77,9 @@ npm pack --dry-run
 
 ## Support
 
-- [Patreon](https://b.remarkabl.org/patreon)
-- [Ko-fi](https://b.remarkabl.org/ko-fi)
-- [Liberapay](https://b.remarkabl.org/liberapay)
-- [Teepsring](https://b.remarkabl.org/teespring)
+- [Patreon](https://patreon.com/mastashake08)
+- [Cash App](https://cash.me/$mastashake08)
 
 ## License
 
-[MIT](https://github.com/mastashake08/npm-package-template/blob/master/LICENSE)
+[MIT](https://github.com/mastashake08/shake-video-element/blob/master/LICENSE)

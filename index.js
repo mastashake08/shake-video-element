@@ -1,3 +1,4 @@
-module.exports = function () {
-  return 'npm-package-template';
+import { ShakeVideoElement } from "./classes/ShakeVideoElement";
+export {
+  ShakeVideoElement
 };

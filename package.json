@@ -1,28 +1,24 @@
 {
-  "name": "npm-package-template",
-  "version": "1.0.0-alpha",
-  "description": "npm package template.",
+  "name": "@mastashake08/shake-video-element",
+  "version": "1.0.0",
+  "description": "Custom Javascript Web Component for an enhanced Video element inherits from HTMLVideoElement",
   "author": "Jyrone Parker <jyrone.parker@gmail.com>",
   "main": "index.js",
   "scripts": {
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint --ignore-path .gitignore .",
     "lint:fix": "npm run lint -- --fix",
-    "release": "standard-version --no-verify",
-    "test": "mocha",
-    "test:coverage": "nyc npm test",
-    "test:coverage:report": "nyc report --reporter=html",
-    "test:watch": "mocha --watch"
+    "release": "standard-version --no-verify"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mastashake08/npm-package-template"
+    "url": "https://github.com/mastashake08/shake-video-element"
   },
   "bugs": {
-    "url": "https://github.com/mastashake08/npm-package-template/issues"
+    "url": "https://github.com/mastashake08/shake-video-element/issues"
   },
   "keywords": [
-    "npm-package-template"
+    "shake-video-element"
   ],
   "dependencies": {},
   "devDependencies": {
@@ -38,6 +34,5 @@
     "prettier": "^2.2.1",
     "standard-version": "^9.0.0"
   },
-  "files": [],
   "license": "MIT"
 }

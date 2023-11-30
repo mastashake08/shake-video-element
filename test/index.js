@@ -1,8 +1,8 @@
 const assert = require('assert');
 const main = require('..');
 
-describe('npm-package-template', () => {
+describe('shake-video-element', () => {
   it('returns with placeholder', () => {
-    assert.equal(main(), 'npm-package-template');
+    assert.equal(main(), 'shake-video-element');
   });
 });
