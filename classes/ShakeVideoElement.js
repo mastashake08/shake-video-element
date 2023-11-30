@@ -5,7 +5,8 @@ class ShakeVideoElement extends HTMLVideoElement {
         autoStream: false
     }) {
         super();
-        this.#shadow = this.attachShadow({ mode: 'open' });
+        
+        this.#shadow = this.parentElement.attachShadow({ mode: 'open' });
         this.#options = options;
         if(this.#options.autoStream) {
             this.playAndStream();
