@@ -1,27 +1,62 @@
-class ShakeVideoElement extends HTMLVideoElement {
+class ShakeVideoElement extends HTMLElement {
     #options;
     #shadow;
+    #video;
+    #template;
+    static observedAttributes = ["src"];
     constructor(options = {
-        autoStream: false
+        autoStream: false,
+        src: 'https://commons.wikimedia.org/wiki/File:Big_Buck_Bunny_4K.webm'
     }) {
         super();
-        
-        this.#shadow = this.parentElement.attachShadow({ mode: 'open' });
         this.#options = options;
-        if(this.#options.autoStream) {
-            this.playAndStream();
-        }
+        this.#shadow = this.attachShadow({ mode: 'open' });
     }
 
-    /**
+    getVideo() {
+        return this.#video;
+    }
+
+    async attributeChangedCallback(name, oldValue, newValue) {
+        console.log(
+          `Attribute ${name} has changed from ${oldValue} to ${newValue}.`,
+        );
+        switch (name) {
+            case 'src':
+                if(this.#video == null) {
+                    const res = await fetch('/templates/main.html')
+                    const parser = new DOMParser();
+                    const body = await res.text();
+                    const template = parser.parseFromString(body, "text/html");
+                    this.#template = template;
+
+                    console.log([body, this.#template]);
+                    this.#video = this.#template.getElementById('shake-video');
+                    this.#video.src = this.#options.src;
+                    
+                    div.append(this.#video);
+                    this.#shadow.append(div);
+                    console.log(div);
+                    // if(this.#options.autoStream || this.getAttribute('autoStream') == true) {
+                    //     this.playAndStream();
+                    // }      
+            }
+                this.#video.src = newValue;
+            case 'autoStream':
+                if(newValue == true) {
+                    this.playAndStream()
+                }
+        }
+      }
+    /*
      * 
      * @returns returns an object cpntaining all the tracks of the video
      */
     getTracks() {
         return {
-            textTracks: this.textTracks,
-            audioTracks: this.audioTracks,
-            videoTracks: this.videoTracks
+            textTracks: this.#video.textTracks,
+            audioTracks: this.#video.audioTracks,
+            videoTracks: this.#video.videoTracks
         }
     }
 
@@ -31,9 +66,9 @@ class ShakeVideoElement extends HTMLVideoElement {
      */
     getFileData() {
         return {
-            height: this.videoHeight,
-            width: this.videoWidth,
-            quality: this.getVideoPlaybackQuality()
+            height: this.#video.videoHeight,
+            width: this.#video.videoWidth,
+            quality: this.#video.getVideoPlaybackQuality()
         }
     }
 
@@ -58,8 +93,8 @@ class ShakeVideoElement extends HTMLVideoElement {
      */
     playAndStream() {
         try {
-            const stream = this.captureStream();
-            this.play();
+            const stream = this.#video.captureStream();
+            this.#video.play();
             return stream;
         } catch (error) {
             alert('There was an error capturing the stream')
@@ -82,12 +117,6 @@ class ShakeVideoElement extends HTMLVideoElement {
         }
     }
 }
-
-//define custom element
-
-customElements.define('shake-video-element', ShakeVideoElement, {
-    extends: 'video'
-});
 
 export {
     ShakeVideoElement

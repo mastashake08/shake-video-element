@@ -1,6 +1,6 @@
 {
   "name": "@mastashake08/shake-video-element",
-  "version": "1.0.6-alpha",
+  "version": "1.4.5-alpha",
   "description": "Custom Javascript Web Component for an enhanced Video element inherits from HTMLVideoElement",
   "author": "Jyrone Parker <jyrone.parker@gmail.com>",
   "main": "index.js",
@@ -9,7 +9,8 @@
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint --ignore-path .gitignore .",
     "lint:fix": "npm run lint -- --fix",
-    "release": "standard-version --no-verify"
+    "release": "standard-version --no-verify",
+    "test-component": "sh test-pack.sh"
   },
   "repository": {
     "type": "git",
