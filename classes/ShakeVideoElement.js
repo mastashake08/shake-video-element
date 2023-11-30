@@ -84,7 +84,9 @@ class ShakeVideoElement extends HTMLVideoElement {
 
 //define custom element
 
-customElements.define('shake-video-element', ShakeVideoElement);
+customElements.define('shake-video-element', ShakeVideoElement, {
+    extends: 'video'
+});
 
 export {
     ShakeVideoElement
