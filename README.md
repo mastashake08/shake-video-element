@@ -18,7 +18,7 @@ cd shake-video-element
 ```
 
 ## Usage
-<shake-video src=""/>
+<shake-video src="" autoStream="true"/>
 
 ## Testing
 
