@@ -1,9 +1,10 @@
 {
   "name": "@mastashake08/shake-video-element",
-  "version": "1.0.1-alpha",
+  "version": "1.0.2-alpha",
   "description": "Custom Javascript Web Component for an enhanced Video element inherits from HTMLVideoElement",
   "author": "Jyrone Parker <jyrone.parker@gmail.com>",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint --ignore-path .gitignore .",
@@ -20,7 +21,8 @@
   "keywords": [
     "shake-video-element"
   ],
-  "dependencies": {},
+  "dependencies": {
+  },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
@@ -34,5 +36,6 @@
     "prettier": "^2.2.1",
     "standard-version": "^9.0.0"
   },
+  "files": ["index.js", "classes/*"],
   "license": "MIT"
 }

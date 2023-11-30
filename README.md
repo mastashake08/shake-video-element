@@ -1,4 +1,4 @@
-# shake-video-element
+# Shake Video Element
 
 [![NPM](https://nodei.co/npm/@mastashake08/shake-video-element.png)](https://nodei.co/npm/@mastashake08/shake-video-element)
 

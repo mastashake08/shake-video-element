@@ -64,6 +64,22 @@ class ShakeVideoElement extends HTMLVideoElement {
             alert('There was an error capturing the stream')
         }
     }
+
+    /**
+     * 
+     * @param {*} id - ID of text track to toggle
+     */
+    toggleTextTrack(id) {
+        const {textTracks} = this.getTracks();
+        const track = textTracks[id];
+        switch(track.mode) {
+            case 'showing':
+                track.mode = 'hidden';
+
+            case 'hidden':
+                track.mode = 'showing';
+        }
+    }
 }
 
 //define custom element
