@@ -1,13 +1,13 @@
+import { ShakeVideoControls } from "./ShakeVideoControls";
 class ShakeVideoElement extends HTMLElement {
     #shadow;
     #video;
     #playButton;
-    #pipButton;
-    #dataButton;
     #uploadButton;
-    static observedAttributes = ["src", "height", "width"];
+    static observedAttributes = ["src"];
     constructor() {
-        super();  
+        super();
+        ShakeVideoControls.registerComponenet();
     }
 
     getVideo() {
@@ -32,9 +32,8 @@ class ShakeVideoElement extends HTMLElement {
         [fileHandle] = await window.showOpenFilePicker(pickerOpts);
         const file = await fileHandle.getFile();
         const url = URL.createObjectURL(file);
+        console.log(this.#video)
         this.#video.src = url;
-        this.#video.width = this.getAttribute('width') != null  ? this.getAttribute('width') : 680;
-        this.#video.height = this.getAttribute('height') != null  ? this.getAttribute('height') : 420;
     }
 
     pip() {
@@ -47,21 +46,50 @@ class ShakeVideoElement extends HTMLElement {
         template.id = 'shake-video-template';
         template.innerHTML = `
                     <div id="shake-video-container">
-                        <slot title="header">
+                        <slot name="header" class="header">
                             <h2>Shake Video</h2>
+                            <p>Click the upload button to load a local video</p>
                         </slot>
-                        <slot title="shake-video-controls">
-                            <button id="shake-play-btn">Play</button>
-                            <button id="shake-pip-btn">PIP</button>
-                            <button id="shake-get-file-data">Get File Data</button>
-                        </slot>
-                        <button id="upload-video">Upload Video</button>
+                        <figure>
+                            <video></video>
+                            <shake-video-controls></shake-video-controls>
+                        </figure>
+                        <button class="shake-btn" id="upload-video">Upload Video</button>
                     </div>
                         
                     <style>
-                        button {
-                        border-color: blue;
-                        border-width: 3px;   
+
+                figure {
+                    max-width:1024px;
+                    max-width:64rem;
+                    width:100%;
+                    height:100%;
+                    max-height:494px;
+                    max-height:30.875rem;
+                    margin:20px auto;
+                    margin:1.25rem auto;
+                    padding:20px;
+                    padding:1.051%;
+                    background-color:#666;
+                    
+                    box-shadow: 10px 5px 5px black;
+                }
+                figcaption {
+                    display:block;
+                    font-size:12px;
+                    font-size:0.75rem;
+                    color:#fff;
+                }
+                        .header {
+                            text-align: center;
+                        }
+                        .shake-btn {
+                            border-color: blue;
+                            border-width: 3px;   
+                        }
+
+                        video {
+                            width:100%;
                         }
                     </style>
                     `;
@@ -69,17 +97,10 @@ class ShakeVideoElement extends HTMLElement {
         let templateContent = template.content;
            
         this.#shadow.appendChild(templateContent.cloneNode(true));
-
-        this.#video = document.createElement('video');
-        this.#shadow.append(this.#video);
+        this.#video = this.#shadow.querySelector('video');
         this.#uploadButton = this.#shadow.getElementById('upload-video');
         this.#uploadButton.onclick = this.uploadVideo.bind(this);
-        this.#dataButton = this.#shadow.querySelector('#shake-get-file-data');
-        this.#dataButton.onclick = this.getFileData.bind(this);            
-        this.#playButton = this.#shadow.querySelector('#shake-play-btn');
-        this.#playButton.addEventListener('click',this.togglePlay.bind(this));
-        this.#pipButton = this.#shadow.querySelector('#shake-pip-btn');
-        this.#pipButton.addEventListener('click', this.pip.bind(this));
+
     }
     
       disconnectedCallback() {
@@ -91,10 +112,8 @@ class ShakeVideoElement extends HTMLElement {
       }
     attributeChangedCallback(name, oldValue, newValue) {
         switch(name) {
-            case 'height': 
-                this.#video.height = newValue;
-            case 'width':
-                this.#video.width = newValue;
+            case 'src': 
+                this.#video.src = newValue;
         }
       }
 
@@ -136,6 +155,15 @@ class ShakeVideoElement extends HTMLElement {
         });
         this.dispatchEvent(event);
         return data;
+    }
+
+    async setOutputAudio () {
+        try{
+        const audioDevice = await navigator.mediaDevices.selectAudioOutput();
+        this.#video.setSinkId(audioDevice.deviceId);
+        } catch (error) {
+            console.log(error.message)
+        }
     }
 
     /**
