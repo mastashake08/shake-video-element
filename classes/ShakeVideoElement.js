@@ -3,10 +3,10 @@ class ShakeVideoElement extends HTMLElement {
     #video;
     #playButton;
     #pipButton;
+    #dataButton;
     static observedAttributes = ["src", "height", "width"];
     constructor() {
-        super();
-        
+        super();  
     }
 
     getVideo() {
@@ -52,6 +52,7 @@ class ShakeVideoElement extends HTMLElement {
                         <slot title="shake-video-controls">
                             <button id="shake-play-btn">Play</button>
                             <button id="shake-pip-btn">PIP</button>
+                            <button id ="shake-get-file-data">Get File Data</button>
                         </slot>
                         <button id="upload-video">Upload Video</button>
                     </div>
@@ -71,7 +72,9 @@ class ShakeVideoElement extends HTMLElement {
         this.#video = document.createElement('video');
         this.#shadow.append(this.#video);
         const upload = this.#shadow.getElementById('upload-video');
-        upload.onclick = this.uploadVideo.bind(this);            
+        upload.onclick = this.uploadVideo.bind(this);
+        this.#dataButton = this.#shadow.querySelector('shake-get-file-data');
+        this.#dataButton.onclick = this.getFileData.bind(this);            
         this.#playButton = this.#shadow.querySelector('#shake-play-btn');
         this.#playButton.addEventListener('click',this.togglePlay.bind(this));
         this.#pipButton = this.#shadow.querySelector('#shake-pip-btn');
@@ -86,7 +89,6 @@ class ShakeVideoElement extends HTMLElement {
         console.log("Custom element moved to new page.");
       }
     attributeChangedCallback(name, oldValue, newValue) {
-        console.log(name, newValue);
         switch(name) {
             case 'height': 
                 this.#video.height = newValue;
@@ -96,7 +98,6 @@ class ShakeVideoElement extends HTMLElement {
       }
 
       togglePlay()  {
-        console.log(this.#video.paused)
         if(!this.#video.paused) {
             this.#video.pause();
             this.#playButton.innerHTML = 'Play';
