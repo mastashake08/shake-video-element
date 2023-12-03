@@ -4,6 +4,7 @@ class ShakeVideoElement extends HTMLElement {
     #playButton;
     #pipButton;
     #dataButton;
+    #uploadButton;
     static observedAttributes = ["src", "height", "width"];
     constructor() {
         super();  
@@ -71,8 +72,8 @@ class ShakeVideoElement extends HTMLElement {
 
         this.#video = document.createElement('video');
         this.#shadow.append(this.#video);
-        const upload = this.#shadow.getElementById('upload-video');
-        upload.onclick = this.uploadVideo.bind(this);
+        this.#uploadButton = this.#shadow.getElementById('upload-video');
+        this.#uploadButton.onclick = this.uploadVideo.bind(this);
         this.#dataButton = this.#shadow.querySelector('#shake-get-file-data');
         this.#dataButton.onclick = this.getFileData.bind(this);            
         this.#playButton = this.#shadow.querySelector('#shake-play-btn');
@@ -129,8 +130,12 @@ class ShakeVideoElement extends HTMLElement {
             quality: this.#video.getVideoPlaybackQuality(),
             tracks: this.getTracks()
         };
-        console.log(data)
-        return data
+        const event = new CustomEvent('shake-video-file-data', {
+            data: data,
+            bubbles: true
+        });
+        this.dispatchEvent(event);
+        return data;
     }
 
     /**
