@@ -52,7 +52,7 @@ class ShakeVideoElement extends HTMLElement {
                         <slot title="shake-video-controls">
                             <button id="shake-play-btn">Play</button>
                             <button id="shake-pip-btn">PIP</button>
-                            <button id ="shake-get-file-data">Get File Data</button>
+                            <button id="shake-get-file-data">Get File Data</button>
                         </slot>
                         <button id="upload-video">Upload Video</button>
                     </div>
@@ -73,7 +73,7 @@ class ShakeVideoElement extends HTMLElement {
         this.#shadow.append(this.#video);
         const upload = this.#shadow.getElementById('upload-video');
         upload.onclick = this.uploadVideo.bind(this);
-        this.#dataButton = this.#shadow.querySelector('shake-get-file-data');
+        this.#dataButton = this.#shadow.querySelector('#shake-get-file-data');
         this.#dataButton.onclick = this.getFileData.bind(this);            
         this.#playButton = this.#shadow.querySelector('#shake-play-btn');
         this.#playButton.addEventListener('click',this.togglePlay.bind(this));
@@ -123,11 +123,14 @@ class ShakeVideoElement extends HTMLElement {
      * @returns An object with a heigh, width, and quality object
      */
     getFileData() {
-        return {
+        const data = {
             height: this.#video.videoHeight,
             width: this.#video.videoWidth,
-            quality: this.#video.getVideoPlaybackQuality()
-        }
+            quality: this.#video.getVideoPlaybackQuality(),
+            tracks: this.getTracks()
+        };
+        console.log(data)
+        return data
     }
 
     /**
