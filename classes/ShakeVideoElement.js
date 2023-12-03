@@ -1,5 +1,4 @@
 class ShakeVideoElement extends HTMLElement {
-    #options;
     #shadow;
     #video;
     #playButton;
@@ -33,8 +32,8 @@ class ShakeVideoElement extends HTMLElement {
         const file = await fileHandle.getFile();
         const url = URL.createObjectURL(file);
         this.#video.src = url;
-        this.#video.width = 680;
-        this.#video.height = 420;
+        this.#video.width = this.getAttribute('width') != null  ? this.getAttribute('width') : 680;
+        this.#video.height = this.getAttribute('height') != null  ? this.getAttribute('height') : 420;
     }
 
     pip() {
