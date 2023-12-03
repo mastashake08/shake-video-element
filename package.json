@@ -1,6 +1,6 @@
 {
   "name": "@mastashake08/shake-video-element",
-  "version": "1.4.6-alpha",
+  "version": "1.1.0",
   "description": "Custom Javascript Web Component for an enhanced Video element inherits from HTMLVideoElement",
   "author": "Jyrone Parker <jyrone.parker@gmail.com>",
   "main": "index.js",
