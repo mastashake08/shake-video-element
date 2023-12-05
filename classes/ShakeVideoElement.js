@@ -41,6 +41,11 @@ class ShakeVideoElement extends HTMLElement {
     }
 
     connectedCallback() {
+        this.addEventListener('pip', () => {
+            console.log('pip')
+            this.pip()
+        });
+
         this.#shadow = this.attachShadow({ mode: 'open' });
         const template = document.createElement('template');
         template.id = 'shake-video-template';
@@ -51,27 +56,55 @@ class ShakeVideoElement extends HTMLElement {
                             <p>Click the upload button to load a local video</p>
                         </slot>
                         <figure>
-                            <video></video>
+                            <video id="video" preload="metadata"></video>
                             <shake-video-controls></shake-video-controls>
                         </figure>
-                        <button class="shake-btn" id="upload-video">Upload Video</button>
+                        <div id="shake-video-actions">
+                            <button class="shake-btn" id="upload-video">Upload Video</button>
+                        </div>
                     </div>
                         
                     <style>
+                    #shake-video-actions{
+                        display: block;
+                        text-align: center;
+                    }
 
+                    html,body {
+                        margin:0;
+                        padding:0;
+                        width:100%;
+                        height:100%;
+                    }
+                    body {
+                        color:#333;
+                        font-family:"Lucida Grande","Lucida Sans Unicode","DejaVu Sans",Lucida,Arial,Helvetica,sans-serif;
+                    }
+                    h1 {
+                        color:#333;
+                        font-size:20px;
+                        font-size:1.25rem;
+                    }
+                    a {
+                        color:#0095dd;
+                        text-decoration:none;
+                    }
+                    a:hover, a:focus {
+                        color:#2255aa;
+                        text-decoration:underline;
+                    }
                 figure {
                     max-width:1024px;
-                    max-width:64rem;
                     width:100%;
                     height:100%;
-                    max-height:494px;
-                    max-height:30.875rem;
+                    max-height: 768px;
                     margin:20px auto;
                     margin:1.25rem auto;
                     padding:20px;
                     padding:1.051%;
-                    background-color:#666;
-                    
+                    background-color: #666;
+                    opacity: 0.8;
+                    border-radius: 1%;
                     box-shadow: 10px 5px 5px black;
                 }
                 figcaption {
@@ -90,7 +123,51 @@ class ShakeVideoElement extends HTMLElement {
 
                         video {
                             width:100%;
+                            border-radius: 2%;
                         }
+                        /* hide controls on fullscreen with WebKit */
+                figure[data-fullscreen=true] video::-webkit-media-controls {
+                    display:none !important;
+                }
+                figure[data-fullscreen=true] {
+                    max-width:100%;
+                    width:100%;
+                    margin:0;
+                    padding:0;
+                    max-height:100%;
+                }
+                figure[data-fullscreen=true] video {
+                    height:auto;
+                }
+                figure[data-fullscreen=true] figcaption {
+                    display:none;
+                }
+                figure[data-fullscreen=true] .controls {
+                    position:absolute;
+                    bottom:2%;
+                    width:100%;
+                    z-index:2147483647;
+                }
+                figure[data-fullscreen=true] .controls li {
+                    width:5%;
+                }
+                figure[data-fullscreen=true] .controls .progress {
+                    width:68%;
+                }
+                @media screen and (max-width:1024px) {
+                    figure {
+                        padding-left:0;
+                        padding-right:0;
+                        height:auto;
+                    }
+                }
+                @media screen and (max-width:42.5em) {
+                  
+                    figcaption {
+                        text-align:center;
+                        margin-top:0.5rem;
+                    }
+                }
                     </style>
                     `;
                     

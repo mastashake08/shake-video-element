@@ -15,14 +15,79 @@ class ShakeVideoControls extends HTMLElement {
         const video = this.parentElement.querySelector('video');
         video.pause();
         video.currentTime = 0;
+        const progress = this.shadowRoot.querySelector('#progress');
+        progress.value = 0;
     } 
-
+    availabilityCallback(available) {
+        const deviceBtn = this.shadowRoot.querySelector("#deviceBtn");
+        // Show or hide the device picker button depending on device availability.
+        deviceBtn.style.display = available ? "inline" : "none";
+      }
     connectedCallback() {
         const templateContent = this.render();
         const shadowRoot = this.attachShadow({ mode: "open" });
         shadowRoot.appendChild(templateContent.cloneNode(true));
         const video = this.parentElement.querySelector('video');
+        const fs = this.shadowRoot.querySelector('#fs');
+        const mute = this.shadowRoot.querySelector('#mute');
+        const volinc = this.shadowRoot.querySelector('#volinc');
+        const voldec = this.shadowRoot.querySelector('#voldec');
+        const progress = this.shadowRoot.querySelector('#progress');
+        const progressBar = this.shadowRoot.querySelector('#progress-bar');
+        const pip = this.shadowRoot.querySelector('#pip');
+        const deviceBtn = this.shadowRoot.querySelector("#deviceBtn");
         
+        pip.addEventListener('click', (e) => {
+            video.requestPictureInPicture();
+        });
+        if (window.WebKitPlaybackTargetAvailabilityEvent) {
+            video.addEventListener('webkitplaybacktargetavailabilitychanged', this.availabilityCallback).catch(() => {
+                deviceBtn.style.display = "inline";
+            })
+        }
+        
+        video.remote.watchAvailability(this.availabilityCallback.bind(this)).catch(() => {
+            /* If the device cannot continuously watch available,
+            show the button to allow the user to try to prompt for a connection.*/
+            deviceBtn.style.display = "inline";
+          });
+        video.addEventListener('loadedmetadata', function() {
+            progress.setAttribute('max', video.duration);
+        });
+        progress.addEventListener("click", (e) => {
+            const pos =
+              (e.pageX - progress.offsetLeft - progress.offsetParent.offsetLeft) /
+              progress.offsetWidth;
+            video.currentTime = pos * video.duration;
+          });
+          // As the video is playing, update the progress bar
+			video.addEventListener('timeupdate', function() {
+				// For mobile browsers, ensure that the progress element's max attribute is set
+				if (!progress.getAttribute('max')) progress.setAttribute('max', video.duration);
+				progress.value = video.currentTime;
+				progressBar.style.width = Math.floor((video.currentTime / video.duration) * 100) + '%';
+			});
+        volinc.addEventListener("click", (e) => {
+            const currentVol = video.volume
+            if(currentVol < 1) {
+                video.volume += 0.1
+            }
+
+            video.muted = video.volume <= 0;
+        });
+        voldec.addEventListener("click", (e) => {
+            const currentVol = video.volume
+            if(currentVol >= 0.1) {
+                video.volume -= 0.1
+            }
+            video.muted = video.volume <= 0;
+        });
+        mute.addEventListener("click", (e) => {
+            video.muted = !video.muted;
+        });
+        fs.addEventListener("click", (e) => {
+            video.requestFullscreen()
+        });
 
         const playpause = this.shadowRoot.querySelector('#playpause')
     
@@ -61,6 +126,8 @@ class ShakeVideoControls extends HTMLElement {
             <div id="video-controls" class="controls" data-state="visible">
                 <button id="playpause" type="button" data-state="play">Play/Pause</button>
                 <button id="stop" type="button" data-state="stop">Stop</button>
+                <button id="pip" type="button" data-state="pip">PIP</button>
+                <button id="deviceBtn" type="button" data-state="cast">Pick device</button>
                 <div class="progress">
                     <progress id="progress" value="0" min="0">
                         <span id="progress-bar"></span>
@@ -121,6 +188,9 @@ class ShakeVideoControls extends HTMLElement {
                 .controls button:hover, .controls button:focus {
                     opacity:0.5;
                 }
+                .controls button[data-state="pip"] {
+                    background-image:url("data:image/svg+xml;charset=utf-8;base64,PHN2ZyB3aWR0aD0iNjRweCIgaGVpZ2h0PSI2NHB4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgZmlsbD0iIzAwMDAwMCIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjAuMDAwMjQwMDAwMDAwMDAwMDAwMDMiPjxnIGlkPSJTVkdSZXBvX2JnQ2FycmllciIgc3Ryb2tlLXdpZHRoPSIwIj48L2c+PGcgaWQ9IlNWR1JlcG9fdHJhY2VyQ2FycmllciIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48L2c+PGcgaWQ9IlNWR1JlcG9faWNvbkNhcnJpZXIiPiA8Zz4gPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAgMGgyNHYyNEgweiI+PC9wYXRoPiA8cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGQ9Ik0yMSAzYTEgMSAwIDAgMSAxIDF2N2gtMlY1SDR2MTRoNnYySDNhMSAxIDAgMCAxLTEtMVY0YTEgMSAwIDAgMSAxLTFoMTh6bTAgMTBhMSAxIDAgMCAxIDEgMXY2YTEgMSAwIDAgMS0xIDFoLThhMSAxIDAgMCAxLTEtMXYtNmExIDEgMCAwIDEgMS0xaDh6bS0xIDJoLTZ2NGg2di00eiI+PC9wYXRoPiA8L2c+IDwvZz48L3N2Zz4=");
+                }
                 .controls button[data-state="play"] {
                     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpFNDZDNDg2MEEzMjFFMjExOTBEQkQ4OEMzRUMyQjhERCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpCNkU0NTY5NkE0MDcxMUUyQjgwQkYzQzhCMDZBRTU1NCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpCNkU0NTY5NUE0MDcxMUUyQjgwQkYzQzhCMDZBRTU1NCIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChXaW5kb3dzKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjQzQ0QwNDBBMDJBNEUyMTFCOTZEQzYyRDgyRUVBOUZDIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkU0NkM0ODYwQTMyMUUyMTE5MERCRDg4QzNFQzJCOEREIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+kBUJ9AAAAXFJREFUeNrsmLtOAkEUhneQyiAdDTExGlYMBaW9oq/ge8jlUbwkthTY2EGBLehbKK0UxsQgVK7/SWbMZo3j3mbmxPAnXyi2+fIzZ3dmRBAEHucUPO6hBhUyNXAH3umxJRZgCBo/nCKCe+DVoliUN5LUCd46lFOMwk4iPCRCiDl+Ko5X3RJOm99OEcGAyVyIrFO8lEPE9jXTBNvgRq4ba6+ZuAs5nFMwy3NQdFOcRpBSBtfgk6ugykkebZoUpGyBqyxtmhZUaYFnzoKqzcukbdoUVDkGT5wFKSVwEadNV4IqR3+16VrQkxuSVRxBVzvqKija+tQl/fafyx00u7/YBxOOU0yttcEHx9fMPphy/JJQa50krdkUrIMHjruZDdBN25ppwYOsrZkSpNZ68hDFast/Bg7Bo4nDu+7g/m/Oxc6u3+YMnBY6wTEDwXvdbmYXvDi82aKrP183xZQd0LcsSktrIC9PvV+neH1HvRZ0kC8BBgADq2RhyZa7BQAAAABJRU5ErkJggg==');
                 }
@@ -148,12 +218,17 @@ class ShakeVideoControls extends HTMLElement {
                 .controls button[data-state="cancel-fullscreen"] {
                     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpFNDZDNDg2MEEzMjFFMjExOTBEQkQ4OEMzRUMyQjhERCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpCM0M2OUNCOUE0MDcxMUUyQjgwQkYzQzhCMDZBRTU1NCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpCMzlFNDkzMUE0MDcxMUUyQjgwQkYzQzhCMDZBRTU1NCIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChXaW5kb3dzKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjQzQ0QwNDBBMDJBNEUyMTFCOTZEQzYyRDgyRUVBOUZDIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkU0NkM0ODYwQTMyMUUyMTE5MERCRDg4QzNFQzJCOEREIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+1VELOwAAAadJREFUeNrs2EtOwzAQBuAEOAEIKsQluAAbGqSGHRIrEKveoQEWNOF0SFyGZ6GkwowlWwpm7IwdT8kiI/2LWk39yY4faiqESPpcG0nPq/fARE5xM0btrIGw7fQ4gJeQJ8gRI24MeYac+wIvICv5fcgrE1Li3lUftUZSgAeQhXpQMCGbOJ03yC51BM8gSyYkhpN95b7voA+yQtpukLbMgjsNWSRUZKXa/2wQBjJzjVwosA1ZNdowoMwtFRcKtCHNzzagsDybk/ZlItCGpAJJuK5AjVx1ANYuHAb0PYsPIZsdtpgt9RvRzuIEWa1dp1hYtqBOU3zf0qEvUK/uVmBqotI0/ffb1XBhHYBIlQyL5Dr2NlNGBBZcJ0kZAVhwniQP6qgLrS/II9dJMoF8RhhBee06jj3FGK72ANYIchwLiOFkByeQOQFYqCv9koL0BeYOnK65AzgzfgtDZqFACk7XHdI2Q9pakVTgxAPnW7lruinAfcgHE86FfIHsUUdwCvlmwmFIubde+b6DU/V3BAeuiVxoXMgqHq3hwjLyulEP98EBOAB/148AAwA7RI/R8UopbwAAAABJRU5ErkJggg==');	
                 }
+                .controls button[data-state="cast"] {
+                    background-image: url('data:image/svg+xml;charset=utf-8;base64,PHN2ZyB3aWR0aD0iNjRweCIgaGVpZ2h0PSI2NHB4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgaWQ9IlNWR1JlcG9fYmdDYXJyaWVyIiBzdHJva2Utd2lkdGg9IjAiPjwvZz48ZyBpZD0iU1ZHUmVwb190cmFjZXJDYXJyaWVyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjwvZz48ZyBpZD0iU1ZHUmVwb19pY29uQ2FycmllciI+PHBhdGggZD0iTTQgMTBWN0M0IDYuNDQ3NzIgNC40NDc3MiA2IDUgNkgxOUMxOS41NTIzIDYgMjAgNi40NDc3MiAyMCA3VjE3QzIwIDE3LjU1MjMgMTkuNTUyMyAxOCAxOSAxOEgxMk02IDE4QzYgMTYuODk1NCA1LjEwNDU3IDE2IDQgMTZNOCAxOEM4IDE1Ljc5MDkgNi4yMDkxNCAxNCA0IDE0TTQgMTJDNy4zMTM3MSAxMiAxMCAxNC42ODYzIDEwIDE4IiBzdHJva2U9IiM0NjQ0NTUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PC9wYXRoPjwvZz48L3N2Zz4=');	
+                }
                 .controls progress {
                     display:block;
                     width:100%;
-                    height:81%;
+                    height:10px;
                     margin-top:2px;
                     margin-top:0.125rem;
+                    margin-right:2px;
+                    margin-right:0.125rem;
                     border:none;
                     overflow:hidden;
                     -moz-border-radius:2px;
@@ -194,43 +269,11 @@ class ShakeVideoControls extends HTMLElement {
                     margin-top:0.5rem;
                 }
 
-                /* hide controls on fullscreen with WebKit */
-                figure[data-fullscreen=true] video::-webkit-media-controls {
-                    display:none !important;
-                }
-                figure[data-fullscreen=true] {
-                    max-width:100%;
-                    width:100%;
-                    margin:0;
-                    padding:0;
-                    max-height:100%;
-                }
-                figure[data-fullscreen=true] video {
-                    height:auto;
-                }
-                figure[data-fullscreen=true] figcaption {
-                    display:none;
-                }
-                figure[data-fullscreen=true] .controls {
-                    position:absolute;
-                    bottom:2%;
-                    width:100%;
-                    z-index:2147483647;
-                }
-                figure[data-fullscreen=true] .controls li {
-                    width:5%;
-                }
-                figure[data-fullscreen=true] .controls .progress {
-                    width:68%;
-                }
+                
 
                 /* Media Queries */
                 @media screen and (max-width:1024px) {
-                    figure {
-                        padding-left:0;
-                        padding-right:0;
-                        height:auto;
-                    }
+                    
                     .controls {
                         /* we want the buttons to be proportionally bigger, so give their parent a set height */
                         height:30px;
