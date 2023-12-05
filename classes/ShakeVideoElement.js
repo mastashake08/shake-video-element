@@ -22,7 +22,7 @@ class ShakeVideoElement extends HTMLElement {
             {
                 description: "Video",
                 accept: {
-                "video/*": [".webm", ".mp4", ".mov"],
+                "video/*": [".webm", ".mp4", ".mov", ".mpd"],
                 },
             },
             ],
@@ -32,7 +32,6 @@ class ShakeVideoElement extends HTMLElement {
         [fileHandle] = await window.showOpenFilePicker(pickerOpts);
         const file = await fileHandle.getFile();
         const url = URL.createObjectURL(file);
-        console.log(this.#video)
         this.#video.src = url;
     }
 
